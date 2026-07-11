@@ -46,7 +46,11 @@ export default function ProfilePicker({ lang, onSelect }: ProfilePickerProps) {
 
   useEffect(() => {
     fetchProfiles()
-      .then((p) => { setProfiles(p); setLoading(false); })
+      .then((p) => {
+        setProfiles(p);
+        setLoading(false);
+        return null;
+      })
       .catch(() => setLoading(false));
   }, []);
 
@@ -168,7 +172,7 @@ export default function ProfilePicker({ lang, onSelect }: ProfilePickerProps) {
                 min={1}
                 max={50}
                 value={form.family_size}
-                onChange={(e) => setForm({ ...form, family_size: parseInt(e.target.value) || 1 })}
+                onChange={(e) => setForm({ ...form, family_size: parseInt(e.target.value, 10) || 1 })}
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-sm"
               />
             </div>

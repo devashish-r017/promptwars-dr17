@@ -4,6 +4,7 @@
 /* StormShield Design Tokens */
 /* ========================= */
 
+/* stylelint-disable-next-line at-rule-no-unknown */
 @theme {
   /* Primary - Sky blue (weather-inspired) */
   --color-primary-50: #f0f9ff;

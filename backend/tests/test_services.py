@@ -156,9 +156,9 @@ async def test_weather_resolution_live_fetching(monkeypatch):
         weather = await weather_service.get_weather("Kolkata")
         assert weather.city == "Kolkata"
         assert weather.source == "live"
-        assert weather.temperature_c == 29.5
+        assert weather.temperature_c == pytest.approx(29.5)
         assert weather.humidity_percent == 85
-        assert weather.wind_speed_kmh == 36.0
+        assert weather.wind_speed_kmh == pytest.approx(36.0)
         assert weather.condition == "Heavy Intensity Rain"
         assert weather.severity == "warning"
         assert weather.flood_risk == "high"
@@ -234,6 +234,7 @@ def test_alert_expiry_logic(db: Session):
 async def test_demo_timeline_execution(monkeypatch, db):
     # Mock asyncio.sleep to complete instantly so the test runs immediately
     async def mock_sleep(seconds):
+        # Empty mock sleep implementation to bypass real delays during unit tests
         pass
     monkeypatch.setattr(asyncio, "sleep", mock_sleep)
 

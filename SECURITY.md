@@ -30,3 +30,11 @@
 | Never return raw LLM errors to the frontend          | Catch exceptions in the AI service; return a user-friendly error message |
 | Never commit `.env` or `stormshield.db`              | Ensure both are in `.gitignore` before first commit             |
 | Never disable CORS in production                     | CORS is configured to allow only `http://localhost:5173` in dev |
+
+## License & Package Compliance
+
+- **Exception - `lightningcss` (MPL-2.0)**:
+  - **Context**: CodeAnt or other compliance scanners might flag `lightningcss` as a "Non-Permissive Package" because it is under the MPL-2.0 weak copyleft license.
+  - **Justification**: `lightningcss` is pulled in solely as a build-time devDependency by the `@tailwindcss/vite` plugin (required for Tailwind CSS v4) and `vite`. It is used exclusively for compilation, minification, and vendor prefixing of CSS.
+  - **Distribution**: This package is **never distributed** to the client browser, nor is its source code modified. Only the raw compiled, standard-compliant CSS is served. Therefore, this usage is fully compliant and does not trigger any source-disclosure/copyleft requirements of MPL-2.0. It is a documented false positive in security reviews.
+

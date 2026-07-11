@@ -1,22 +1,5 @@
 /* Types matching backend Pydantic schemas */
 
-export interface Profile {
-  id: number;
-  name: string;
-  city: string;
-  family_size: number;
-  has_elderly: boolean;
-  has_children: boolean;
-  has_pets: boolean;
-  dwelling_type: string;
-  health_conditions: string | null;
-  has_vehicle: boolean;
-  near_water_body: boolean;
-  preferred_language: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface ProfileCreate {
   name: string;
   city: string;
@@ -29,6 +12,12 @@ export interface ProfileCreate {
   has_vehicle: boolean;
   near_water_body: boolean;
   preferred_language: string;
+}
+
+export interface Profile extends ProfileCreate {
+  id: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface WeatherData {

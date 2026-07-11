@@ -30,6 +30,11 @@ def get_override() -> dict[str, Any] | None:
     return _current_override
 
 
+HEAVY_RAIN = "Heavy Rain"
+MODERATE_RAIN = "Moderate Rain"
+LIGHT_RAIN = "Light Rain"
+
+
 # ---------------------------------------------------------------------------
 # Predefined weather scenarios for demo
 # ---------------------------------------------------------------------------
@@ -49,7 +54,7 @@ _SCENARIOS: dict[str, dict[str, Any]] = {
         "humidity_percent": 92.0,
         "rainfall_mm": 120.0,
         "wind_speed_kmh": 35.0,
-        "condition": "Heavy Rain",
+        "condition": HEAVY_RAIN,
         "flood_risk": "high",
         "severity": "warning",
         "monsoon_phase": "active_monsoon",
@@ -92,17 +97,17 @@ _SCENARIOS: dict[str, dict[str, Any]] = {
 _CITY_BASELINES: dict[str, dict[str, Any]] = {
     "Mumbai": {
         "temperature_c": 28.0, "humidity_percent": 88.0, "rainfall_mm": 80.0,
-        "wind_speed_kmh": 25.0, "condition": "Heavy Rain",
+        "wind_speed_kmh": 25.0, "condition": HEAVY_RAIN,
         "flood_risk": "high", "severity": "warning", "monsoon_phase": "active_monsoon",
     },
     "Delhi": {
         "temperature_c": 34.0, "humidity_percent": 72.0, "rainfall_mm": 30.0,
-        "wind_speed_kmh": 15.0, "condition": "Moderate Rain",
+        "wind_speed_kmh": 15.0, "condition": MODERATE_RAIN,
         "flood_risk": "moderate", "severity": "watch", "monsoon_phase": "active_monsoon",
     },
     "Chennai": {
         "temperature_c": 32.0, "humidity_percent": 78.0, "rainfall_mm": 20.0,
-        "wind_speed_kmh": 18.0, "condition": "Light Rain",
+        "wind_speed_kmh": 18.0, "condition": LIGHT_RAIN,
         "flood_risk": "moderate", "severity": "normal", "monsoon_phase": "pre_monsoon",
     },
     "Kolkata": {
@@ -112,18 +117,23 @@ _CITY_BASELINES: dict[str, dict[str, Any]] = {
     },
     "Bengaluru": {
         "temperature_c": 24.0, "humidity_percent": 70.0, "rainfall_mm": 25.0,
-        "wind_speed_kmh": 12.0, "condition": "Light Rain",
+        "wind_speed_kmh": 12.0, "condition": LIGHT_RAIN,
         "flood_risk": "low", "severity": "normal", "monsoon_phase": "active_monsoon",
     },
     "Hyderabad": {
         "temperature_c": 29.0, "humidity_percent": 75.0, "rainfall_mm": 35.0,
-        "wind_speed_kmh": 16.0, "condition": "Moderate Rain",
+        "wind_speed_kmh": 16.0, "condition": MODERATE_RAIN,
         "flood_risk": "moderate", "severity": "watch", "monsoon_phase": "active_monsoon",
     },
     "Pune": {
         "temperature_c": 25.0, "humidity_percent": 82.0, "rainfall_mm": 55.0,
-        "wind_speed_kmh": 22.0, "condition": "Heavy Rain",
+        "wind_speed_kmh": 22.0, "condition": HEAVY_RAIN,
         "flood_risk": "moderate", "severity": "watch", "monsoon_phase": "active_monsoon",
+    },
+    "Ahmedabad": {
+        "temperature_c": 33.0, "humidity_percent": 68.0, "rainfall_mm": 25.0,
+        "wind_speed_kmh": 14.0, "condition": LIGHT_RAIN,
+        "flood_risk": "low", "severity": "normal", "monsoon_phase": "active_monsoon",
     },
     "Jaipur": {
         "temperature_c": 35.0, "humidity_percent": 60.0, "rainfall_mm": 15.0,
@@ -137,7 +147,7 @@ _CITY_BASELINES: dict[str, dict[str, Any]] = {
     },
     "Lucknow": {
         "temperature_c": 33.0, "humidity_percent": 74.0, "rainfall_mm": 28.0,
-        "wind_speed_kmh": 13.0, "condition": "Moderate Rain",
+        "wind_speed_kmh": 13.0, "condition": MODERATE_RAIN,
         "flood_risk": "moderate", "severity": "watch", "monsoon_phase": "active_monsoon",
     },
 }
@@ -145,7 +155,7 @@ _CITY_BASELINES: dict[str, dict[str, Any]] = {
 # Fallback for unlisted cities
 _DEFAULT_BASELINE: dict[str, Any] = {
     "temperature_c": 30.0, "humidity_percent": 75.0, "rainfall_mm": 40.0,
-    "wind_speed_kmh": 15.0, "condition": "Moderate Rain",
+    "wind_speed_kmh": 15.0, "condition": MODERATE_RAIN,
     "flood_risk": "moderate", "severity": "watch", "monsoon_phase": "active_monsoon",
 }
 

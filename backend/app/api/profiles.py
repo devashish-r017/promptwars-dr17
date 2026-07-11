@@ -10,6 +10,8 @@ from app.services import cache_service
 
 router = APIRouter(prefix="/api/profiles", tags=["profiles"])
 
+PROFILE_NOT_FOUND = "Profile not found"
+
 
 @router.get("", response_model=list[ProfileResponse])
 def list_profiles(db: Session = Depends(get_db)):
@@ -34,7 +36,7 @@ def create_profile(data: ProfileCreate, db: Session = Depends(get_db)):
 def get_profile(profile_id: int, db: Session = Depends(get_db)):
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
-        raise HTTPException(status_code=404, detail="Profile not found")
+        raise HTTPException(status_code=404, detail=PROFILE_NOT_FOUND)
     return profile
 
 
@@ -42,7 +44,7 @@ def get_profile(profile_id: int, db: Session = Depends(get_db)):
 def update_profile(profile_id: int, data: ProfileUpdate, db: Session = Depends(get_db)):
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
-        raise HTTPException(status_code=404, detail="Profile not found")
+        raise HTTPException(status_code=404, detail=PROFILE_NOT_FOUND)
 
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -60,7 +62,7 @@ def update_profile(profile_id: int, data: ProfileUpdate, db: Session = Depends(g
 def delete_profile(profile_id: int, db: Session = Depends(get_db)):
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
-        raise HTTPException(status_code=404, detail="Profile not found")
+        raise HTTPException(status_code=404, detail=PROFILE_NOT_FOUND)
 
     cache_service.invalidate(db, profile_id)
     db.delete(profile)

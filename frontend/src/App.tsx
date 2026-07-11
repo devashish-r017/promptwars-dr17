@@ -65,18 +65,20 @@ function AppContent() {
     const checkAlerts = async () => {
       try {
         const alerts: Alert[] = await fetchAlerts(profile.city);
-        if (alerts.length > 0 && alerts[0].id > lastAlertId) {
-          if (lastAlertId > 0) {
-            // New alert arrived
-            const newest = alerts[0];
-            const toastFn = newest.severity === 'critical' ? toast.error :
-                            newest.severity === 'warning' ? toast.warning : toast.info;
-            toastFn(newest.title, {
-              description: newest.description,
-              duration: 8000,
-            });
+        if (alerts.length > 0) {
+          const [newest] = alerts;
+          if (newest.id > lastAlertId) {
+            if (lastAlertId > 0) {
+              // New alert arrived
+              const toastFn = newest.severity === 'critical' ? toast.error :
+                              newest.severity === 'warning' ? toast.warning : toast.info;
+              toastFn(newest.title, {
+                description: newest.description,
+                duration: 8000,
+              });
+            }
+            lastAlertId = newest.id;
           }
-          lastAlertId = alerts[0].id;
         }
       } catch {
         // Silently fail

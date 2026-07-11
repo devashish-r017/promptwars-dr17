@@ -31,3 +31,19 @@ class UserProfile(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+
+    def to_dict(self) -> dict:
+        """Convert profile ORM object to dict for AI prompt."""
+        return {
+            "name": self.name,
+            "city": self.city,
+            "family_size": self.family_size,
+            "has_elderly": self.has_elderly,
+            "has_children": self.has_children,
+            "has_pets": self.has_pets,
+            "dwelling_type": self.dwelling_type,
+            "health_conditions": self.health_conditions,
+            "has_vehicle": self.has_vehicle,
+            "near_water_body": self.near_water_body,
+        }
+

@@ -11,21 +11,6 @@ from app.services import ai_service, alert_service, cache_service, weather_servi
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
 
-def _profile_to_dict(p: UserProfile) -> dict:
-    return {
-        "name": p.name,
-        "city": p.city,
-        "family_size": p.family_size,
-        "has_elderly": p.has_elderly,
-        "has_children": p.has_children,
-        "has_pets": p.has_pets,
-        "dwelling_type": p.dwelling_type,
-        "health_conditions": p.health_conditions,
-        "has_vehicle": p.has_vehicle,
-        "near_water_body": p.near_water_body,
-    }
-
-
 @router.get("/{profile_id}", response_model=DashboardResponse)
 async def get_dashboard(profile_id: int, db: Session = Depends(get_db)):
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
@@ -44,7 +29,7 @@ async def get_dashboard(profile_id: int, db: Session = Depends(get_db)):
         dashboard_ai = cached
     else:
         dashboard_ai = await ai_service.generate_dashboard(
-            _profile_to_dict(profile),
+            profile.to_dict(),
             weather.model_dump(),
             profile.preferred_language,
         )

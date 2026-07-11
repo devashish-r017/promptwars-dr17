@@ -11,20 +11,31 @@ from app.services import ai_service, cache_service, weather_service
 router = APIRouter(prefix="/api/plans", tags=["plans"])
 
 
-def _profile_to_dict(p: UserProfile) -> dict:
-    """Convert profile ORM object to dict for AI prompt."""
-    return {
-        "name": p.name,
-        "city": p.city,
-        "family_size": p.family_size,
-        "has_elderly": p.has_elderly,
-        "has_children": p.has_children,
-        "has_pets": p.has_pets,
-        "dwelling_type": p.dwelling_type,
-        "health_conditions": p.health_conditions,
-        "has_vehicle": p.has_vehicle,
-        "near_water_body": p.near_water_body,
-    }
+async def _generate_and_cache_plan(
+    db: Session,
+    profile: UserProfile,
+    weather,
+    weather_hash: str,
+) -> dict:
+    """Generate a fresh plan and save to cache if no error."""
+    plan_data = await ai_service.generate_plan(
+        profile.to_dict(),
+        weather.model_dump(),
+        profile.preferred_language,
+    )
+
+    if "error" not in plan_data:
+        cache_service.set_cached(
+            db,
+            profile.id,
+            "preparedness_plan",
+            weather_hash,
+            profile.preferred_language,
+            plan_data,
+            ttl_seconds=3600,
+        )
+
+    return plan_data
 
 
 @router.get("/{profile_id}", response_model=PrepPlanResponse)
@@ -43,19 +54,7 @@ async def get_plan(profile_id: int, db: Session = Depends(get_db)):
     if cached and "error" not in cached:
         return PrepPlanResponse(**cached)
 
-    # Generate fresh
-    plan_data = await ai_service.generate_plan(
-        _profile_to_dict(profile),
-        weather.model_dump(),
-        profile.preferred_language,
-    )
-
-    if "error" not in plan_data:
-        cache_service.set_cached(
-            db, profile_id, "preparedness_plan", weather_hash,
-            profile.preferred_language, plan_data, ttl_seconds=3600,
-        )
-
+    plan_data = await _generate_and_cache_plan(db, profile, weather, weather_hash)
     return PrepPlanResponse(**plan_data)
 
 
@@ -71,16 +70,6 @@ async def regenerate_plan(profile_id: int, db: Session = Depends(get_db)):
     weather = await weather_service.get_weather(profile.city)
     weather_hash = weather_service.get_weather_hash(weather)
 
-    plan_data = await ai_service.generate_plan(
-        _profile_to_dict(profile),
-        weather.model_dump(),
-        profile.preferred_language,
-    )
-
-    if "error" not in plan_data:
-        cache_service.set_cached(
-            db, profile_id, "preparedness_plan", weather_hash,
-            profile.preferred_language, plan_data, ttl_seconds=3600,
-        )
-
+    plan_data = await _generate_and_cache_plan(db, profile, weather, weather_hash)
     return PrepPlanResponse(**plan_data)
+

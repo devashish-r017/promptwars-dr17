@@ -15,3 +15,5 @@ Ordered by dependency. Each task follows the Mini Loop: Understand → Plan → 
 - [x] **11. Frontend preparedness plan** — Build PrepPlan with three-phase accordion; connect to plans API; verify phase content renders and current phase auto-highlights ✅ Three-phase accordion with auto-expand + regenerate
 - [x] **12. Frontend alerts & chat** — Build AlertsCenter with polling + Demo Mode controls; build ChatFAB and ChatPanel with Markdown rendering and suggested prompts; verify alerts appear and chat responds contextually ✅ AlertsCenter with 30s polling + demo controls; ChatPanel with FAB, markdown, suggested prompts
 - [x] **13. Multilingual support** — Add language toggle, translations dictionary, and Hindi prompt instructions; verify AI content generates in Hindi and UI labels switch ✅ ~70 EN/HI translation keys, language toggle in navbar, AI prompts include language instruction
+- [x] **14. Code quality & security compliance** — Remove duplicate serialization code and type definitions; document lightningcss license exception; verify clean compile & tests ✅ All 25 backend tests passed, frontend type-checks clean, documentation appended.
+
