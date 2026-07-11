@@ -5,10 +5,9 @@ services:
       dockerfile: Dockerfile
     container_name: stormshield-backend
     restart: always
+    env_file:
+      - .env
     environment:
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - OPENWEATHERMAP_API_KEY=${OPENWEATHERMAP_API_KEY}
-      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
       - DATABASE_URL=sqlite:////app/data/stormshield.db
     volumes:
       - stormshield-db:/app/data
