@@ -22,6 +22,10 @@ interface ProfilePickerProps {
   onSelect: (profile: Profile) => void;
 }
 
+/**
+ * ProfilePicker component renders a view to select an existing user profile
+ * or fill out a form to create a new profile with household specifications.
+ */
 export default function ProfilePicker({ lang, onSelect }: ProfilePickerProps) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -54,6 +58,9 @@ export default function ProfilePicker({ lang, onSelect }: ProfilePickerProps) {
       .catch(() => setLoading(false));
   }, []);
 
+  /**
+   * Handles creation of a new profile on submission of the form.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');

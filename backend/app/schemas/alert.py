@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class AlertCreate(BaseModel):
+    """Pydantic schema representing parameters needed to create a new weather alert."""
     severity: str = Field(..., pattern="^(info|warning|critical)$")
     title: str = Field(..., min_length=1, max_length=200)
     description: str
@@ -13,6 +14,7 @@ class AlertCreate(BaseModel):
 
 
 class AlertResponse(BaseModel):
+    """Pydantic schema representing the complete fields of a retrieved weather alert."""
     id: int
     severity: str
     title: str

@@ -9,6 +9,7 @@ from app.database import Base
 
 
 class UserProfile(Base):
+    """SQLAlchemy model representing a user profile with personal context, household details, and preferences."""
     __tablename__ = "user_profiles"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

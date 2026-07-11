@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class ProfileCreate(BaseModel):
+    """Pydantic schema representing parameters needed to create a new user profile."""
     name: str = Field(..., min_length=1, max_length=100)
     city: str = Field(..., min_length=1, max_length=50)
     family_size: int = Field(default=1, ge=1, le=50)
@@ -22,6 +23,7 @@ class ProfileCreate(BaseModel):
 
 
 class ProfileUpdate(BaseModel):
+    """Pydantic schema representing optional parameters to update an existing user profile."""
     name: str | None = None
     city: str | None = None
     family_size: int | None = Field(default=None, ge=1, le=50)
@@ -36,6 +38,7 @@ class ProfileUpdate(BaseModel):
 
 
 class ProfileResponse(BaseModel):
+    """Pydantic schema representing complete details of a user profile returned in responses."""
     id: int
     name: str
     city: str

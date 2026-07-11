@@ -13,29 +13,17 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 @router.post("", response_model=ChatResponse)
 async def chat(data: ChatRequest, db: Session = Depends(get_db)):
+    """Handle chat message from the user, retrieving contextual weather details and replying via the AI service."""
     profile = db.query(UserProfile).filter(UserProfile.id == data.profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
 
     weather = await weather_service.get_weather(profile.city)
 
-    profile_dict = {
-        "name": profile.name,
-        "city": profile.city,
-        "family_size": profile.family_size,
-        "has_elderly": profile.has_elderly,
-        "has_children": profile.has_children,
-        "has_pets": profile.has_pets,
-        "dwelling_type": profile.dwelling_type,
-        "health_conditions": profile.health_conditions,
-        "has_vehicle": profile.has_vehicle,
-        "near_water_body": profile.near_water_body,
-    }
-
     history = [msg.model_dump() for msg in data.history]
 
     reply = await ai_service.chat_reply(
-        profile_dict=profile_dict,
+        profile_dict=profile.to_dict(),
         weather_dict=weather.model_dump(),
         message=data.message,
         page_context=data.page_context,

@@ -21,6 +21,10 @@ const PRIORITY_COLORS: Record<string, string> = {
   low: 'bg-slate-100 text-slate-600',
 };
 
+/**
+ * PrepPlanPage component displays the 3-phase preparedness plan (Before, During, After Monsoon)
+ * personalized by the AI for the user's specific context.
+ */
 export default function PrepPlanPage({ profile, lang }: PrepPlanPageProps) {
   const [plan, setPlan] = useState<PrepPlan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,6 +53,9 @@ export default function PrepPlanPage({ profile, lang }: PrepPlanPageProps) {
 
   useEffect(() => { loadPlan(); }, [profile.id]);
 
+  /**
+   * Request a fresh plan generation by invalidating cache on the backend.
+   */
   const handleRegenerate = async () => {
     setRegenerating(true);
     try {

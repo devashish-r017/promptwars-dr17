@@ -1,3 +1,5 @@
+"""Integration tests for all StormShield API routes."""
+
 import pytest
 from unittest.mock import AsyncMock, patch
 from sqlalchemy.orm import Session
@@ -12,6 +14,7 @@ from tests.conftest import TestingSessionLocal
 # ===========================================================================
 
 def test_health_check(client):
+    """Verify that the API health check route returns a successful status payload."""
     response = client.get("/api/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "service": "StormShield API"}
@@ -22,6 +25,7 @@ def test_health_check(client):
 # ===========================================================================
 
 def test_profiles_crud(client, db: Session):
+    """Test full Profile CRUD API lifecycle (create, read, update, delete, error handling, duplicate prevention)."""
     # 1. Get profiles initially empty
     response = client.get("/api/profiles")
     assert response.status_code == 200
@@ -88,6 +92,7 @@ def test_profiles_crud(client, db: Session):
 # ===========================================================================
 
 def test_weather_endpoints(client):
+    """Test retrieving weather and setting/clearing weather overrides via endpoints."""
     # 1. Get weather
     response = client.get("/api/weather/Bengaluru")
     assert response.status_code == 200
@@ -151,6 +156,7 @@ mock_plan = {
 
 
 def test_plans_endpoints(client, db: Session):
+    """Test the preparedness plans endpoints: profile checking, fresh generation, cache hits, and regeneration."""
     # 1. Profile not found
     response = client.get("/api/plans/99999")
     assert response.status_code == 404
@@ -231,6 +237,7 @@ mock_dashboard = {
 
 
 def test_dashboard_endpoint(client, db: Session):
+    """Test retrieving dashboard data: profile check, mock AI response validation, caching, and active alerts integration."""
     # 1. Profile not found
     response = client.get("/api/dashboard/99999")
     assert response.status_code == 404
@@ -271,6 +278,7 @@ def test_dashboard_endpoint(client, db: Session):
 # ===========================================================================
 
 def test_alerts_endpoints(client, db: Session):
+    """Test endpoints for retrieving active weather alerts and controlling the Demo Mode alert timeline."""
     # 1. Get active alerts
     alert = Alert(
         severity="critical",
@@ -308,6 +316,7 @@ def test_alerts_endpoints(client, db: Session):
 # ===========================================================================
 
 def test_chat_endpoint(client, db: Session):
+    """Test the POST /api/chat route: validating user message context, mock AI response formatting, and 404 profiles."""
     # 1. Profile not found
     chat_payload = {
         "profile_id": 99999,

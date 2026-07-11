@@ -13,6 +13,7 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
 @router.get("/{profile_id}", response_model=DashboardResponse)
 async def get_dashboard(profile_id: int, db: Session = Depends(get_db)):
+    """Retrieve aggregated dashboard data for the user profile, including weather, risk score, checklists, travel safety, and alerts."""
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")

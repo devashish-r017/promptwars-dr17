@@ -11,6 +11,10 @@ import ChatPanel from './components/ChatPanel';
 import { updateProfile, fetchAlerts } from './lib/api';
 import type { Profile, Alert } from './lib/types';
 
+/**
+ * AppContent component manages user profile state, language settings,
+ * alert polling, and routes navigation within the application layout.
+ */
 function AppContent() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [lang, setLang] = useState('en');
@@ -91,6 +95,9 @@ function AppContent() {
   }, [profile]);
 
   // Get current page context for chat
+  /**
+   * Helper function to determine the current page context string for the AI chat agent.
+   */
   const getPageContext = () => {
     if (location.pathname.includes('plan')) return 'preparedness_plan';
     if (location.pathname.includes('alerts')) return 'alerts_center';
@@ -124,6 +131,9 @@ function AppContent() {
   );
 }
 
+/**
+ * Main application entry component that mounts global routing context and notifications toaster.
+ */
 export default function App() {
   return (
     <BrowserRouter>

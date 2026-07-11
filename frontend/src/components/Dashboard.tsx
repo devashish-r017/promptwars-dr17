@@ -36,6 +36,11 @@ const SCENARIOS = [
   { value: 'post_monsoon_clear', label: '🌤️ Post-Monsoon' },
 ];
 
+/**
+ * Dashboard component renders the main dashboard page containing weather details,
+ * personalized risk assessment, a quick action checklist, travel safety advice,
+ * and current active alerts.
+ */
 export default function Dashboard({ profile, lang }: DashboardProps) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +63,9 @@ export default function Dashboard({ profile, lang }: DashboardProps) {
 
   useEffect(() => { loadDashboard(); }, [profile.id]);
 
+  /**
+   * Changes the simulated weather scenario override and reloads dashboard data.
+   */
   const handleScenario = async (val: string) => {
     setScenario(val);
     if (val) {

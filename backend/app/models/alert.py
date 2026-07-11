@@ -9,6 +9,7 @@ from app.database import Base
 
 
 class Alert(Base):
+    """SQLAlchemy model representing weather alerts and safety announcements."""
     __tablename__ = "alerts"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

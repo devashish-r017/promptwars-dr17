@@ -1,3 +1,5 @@
+"""Unit and integration tests for backend services (Cache, Weather, Alerts)."""
+
 import asyncio
 import json
 from datetime import datetime, timezone, timedelta
@@ -17,6 +19,7 @@ from app.services import cache_service, weather_service, alert_service
 # ===========================================================================
 
 def test_cache_set_and_get(db: Session):
+    """Verify that cached data is set successfully and retrieved correctly."""
     profile_id = 1
     content_type = "preparedness_plan"
     weather_hash = "abc123weather"
@@ -35,6 +38,7 @@ def test_cache_set_and_get(db: Session):
 
 
 def test_cache_ttl_expiration(db: Session):
+    """Verify that expired cache entries return None and are pruned from the database."""
     profile_id = 1
     content_type = "preparedness_plan"
     weather_hash = "abc123weather"
@@ -56,6 +60,7 @@ def test_cache_ttl_expiration(db: Session):
 
 
 def test_cache_invalidation(db: Session):
+    """Verify that cache invalidation targets the correct profiles and content types."""
     profile_id = 1
     weather_hash = "abc123weather"
     response_data = {"data": "test"}
@@ -83,6 +88,7 @@ def test_cache_invalidation(db: Session):
 # ===========================================================================
 
 def test_weather_override_controls():
+    """Verify that setting, retrieving, and clearing weather overrides works correctly."""
     # Clear override to ensure clean state
     weather_service.clear_override()
     assert weather_service.get_override() is None
@@ -105,6 +111,7 @@ def test_weather_override_controls():
 
 @pytest.mark.asyncio
 async def test_weather_resolution_override():
+    """Test that active weather scenario overrides preempt simulated or live weather resolution."""
     weather_service.set_override("flood_risk")
     try:
         weather = await weather_service.get_weather("Mumbai")
@@ -119,6 +126,7 @@ async def test_weather_resolution_override():
 
 @pytest.mark.asyncio
 async def test_weather_resolution_simulated_fallback():
+    """Test simulated weather fallback logic for both registered and unregistered cities."""
     weather_service.clear_override()
     
     # 1. Test baseline city
@@ -137,6 +145,7 @@ async def test_weather_resolution_simulated_fallback():
 
 @pytest.mark.asyncio
 async def test_weather_resolution_live_fetching(monkeypatch):
+    """Test fetching live weather conditions via OpenWeatherMap API wrapper under successful mock response."""
     weather_service.clear_override()
     monkeypatch.setenv("OPENWEATHERMAP_API_KEY", "mocked_key")
 
@@ -165,6 +174,7 @@ async def test_weather_resolution_live_fetching(monkeypatch):
 
 
 def test_weather_hash():
+    """Verify that the weather hash changes only when key risk-affecting weather fields are modified."""
     w1 = WeatherDataResponse(
         city="Mumbai", source="simulated", temperature_c=28.0, humidity_percent=80.0,
         rainfall_mm=50.0, wind_speed_kmh=15.0, condition="Rainy", flood_risk="high",
@@ -184,6 +194,7 @@ def test_weather_hash():
 # ===========================================================================
 
 def test_alert_creation_and_retrieval(db: Session):
+    """Test creating a weather alert and retrieving active alerts for a target city."""
     # Setup database alerts
     alert_service.create_alert(
         db=db,
@@ -207,6 +218,7 @@ def test_alert_creation_and_retrieval(db: Session):
 
 
 def test_alert_expiry_logic(db: Session):
+    """Test that expired alerts are dynamically updated to inactive and omitted from active alerts query."""
     # Create an alert that expired 5 minutes ago
     expired_alert = Alert(
         severity="critical",
@@ -232,6 +244,7 @@ def test_alert_expiry_logic(db: Session):
 
 @pytest.mark.asyncio
 async def test_demo_timeline_execution(monkeypatch, db):
+    """Verify that all alerts in the Demo Mode timeline are created successfully on timeline run."""
     # Mock asyncio.sleep to complete instantly so the test runs immediately
     async def mock_sleep(seconds):
         # Empty mock sleep implementation to bypass real delays during unit tests
@@ -265,6 +278,7 @@ async def test_demo_timeline_execution(monkeypatch, db):
 
 @pytest.mark.asyncio
 async def test_demo_timeline_cancellation(monkeypatch, db):
+    """Test that a running demo alert timeline task can be successfully stopped/cancelled."""
     # Keep reference to original asyncio.sleep to avoid infinite recursion
     original_sleep = asyncio.sleep
 

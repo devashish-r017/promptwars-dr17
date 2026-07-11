@@ -1,3 +1,5 @@
+"""Pytest configuration and global fixtures for testing."""
+
 import os
 import sys
 from typing import AsyncGenerator
@@ -24,6 +26,7 @@ from app.main import app
 
 # 4. Dependency override for FastAPI route handlers
 def override_get_db():
+    """Dependency override to yield a test database session."""
     db = TestingSessionLocal()
     try:
         yield db

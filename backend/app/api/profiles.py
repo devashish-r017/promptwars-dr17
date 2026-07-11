@@ -15,11 +15,13 @@ PROFILE_NOT_FOUND = "Profile not found"
 
 @router.get("", response_model=list[ProfileResponse])
 def list_profiles(db: Session = Depends(get_db)):
+    """List all user profiles, ordered by updated timestamp descending."""
     return db.query(UserProfile).order_by(UserProfile.updated_at.desc()).all()
 
 
 @router.post("", response_model=ProfileResponse, status_code=201)
 def create_profile(data: ProfileCreate, db: Session = Depends(get_db)):
+    """Create a new user profile with household and personal parameters."""
     # Check for duplicate name
     existing = db.query(UserProfile).filter(UserProfile.name == data.name).first()
     if existing:
@@ -34,6 +36,7 @@ def create_profile(data: ProfileCreate, db: Session = Depends(get_db)):
 
 @router.get("/{profile_id}", response_model=ProfileResponse)
 def get_profile(profile_id: int, db: Session = Depends(get_db)):
+    """Retrieve details of a specific user profile by its ID."""
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail=PROFILE_NOT_FOUND)
@@ -42,6 +45,7 @@ def get_profile(profile_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{profile_id}", response_model=ProfileResponse)
 def update_profile(profile_id: int, data: ProfileUpdate, db: Session = Depends(get_db)):
+    """Update fields of an existing user profile and invalidate its cached AI responses."""
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail=PROFILE_NOT_FOUND)
@@ -60,6 +64,7 @@ def update_profile(profile_id: int, data: ProfileUpdate, db: Session = Depends(g
 
 @router.delete("/{profile_id}", status_code=204)
 def delete_profile(profile_id: int, db: Session = Depends(get_db)):
+    """Delete a user profile and clear its associated cached AI responses."""
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail=PROFILE_NOT_FOUND)

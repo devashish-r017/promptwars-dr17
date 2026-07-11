@@ -12,6 +12,9 @@ import type {
 
 const BASE = '/api';
 
+/**
+ * Helper to perform HTTP fetch requests and handle JSON/error responses.
+ */
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -102,6 +105,9 @@ export function stopDemo(): Promise<{ status: string }> {
 
 // --- Chat ---
 
+/**
+ * Send a chat message to the assistant with current profile and history context.
+ */
 export function sendChatMessage(
   profileId: number,
   message: string,

@@ -40,6 +40,7 @@ async def _generate_and_cache_plan(
 
 @router.get("/{profile_id}", response_model=PrepPlanResponse)
 async def get_plan(profile_id: int, db: Session = Depends(get_db)):
+    """Retrieve the personalized preparedness plan for the user profile, fetching from cache if available."""
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -60,6 +61,7 @@ async def get_plan(profile_id: int, db: Session = Depends(get_db)):
 
 @router.post("/{profile_id}/regenerate", response_model=PrepPlanResponse)
 async def regenerate_plan(profile_id: int, db: Session = Depends(get_db)):
+    """Invalidate existing cached plan and generate a fresh one for the user profile."""
     profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")

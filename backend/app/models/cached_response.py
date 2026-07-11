@@ -9,6 +9,7 @@ from app.database import Base
 
 
 class CachedResponse(Base):
+    """SQLAlchemy model representing cached AI-generated text or JSON responses with a specific TTL."""
     __tablename__ = "cached_responses"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

@@ -10,6 +10,10 @@ interface NavbarProps {
   onSwitchProfile: () => void;
 }
 
+/**
+ * Navbar component renders the main sticky navigation bar with
+ * navigation links, language switcher, and profile indicator.
+ */
 export default function Navbar({ profile, lang, onLanguageToggle, onSwitchProfile }: NavbarProps) {
   return (
     <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">

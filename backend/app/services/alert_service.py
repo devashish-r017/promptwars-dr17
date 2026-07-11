@@ -155,6 +155,7 @@ async def start_demo_timeline(city: str, db_factory) -> None:
     await stop_demo_timeline()
 
     async def _run_timeline():
+        """Asynchronous worker that steps through the timeline stages and posts alerts."""
         for step in _DEMO_TIMELINE:
             await asyncio.sleep(step["delay_seconds"] if step != _DEMO_TIMELINE[0] else 0)
             # Create alert in a new DB session

@@ -21,6 +21,10 @@ const SEVERITY_BG: Record<string, string> = {
   critical: 'border-l-red-500 bg-red-50',
 };
 
+/**
+ * AlertsCenter component displays real-time weather alerts for the user's city
+ * and provides controls to run a demo simulation of escalating alerts.
+ */
 export default function AlertsCenter({ profile, lang }: AlertsCenterProps) {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [demoRunning, setDemoRunning] = useState(false);

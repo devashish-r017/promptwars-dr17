@@ -12,6 +12,9 @@ interface ChatPanelProps {
   pageContext: string;
 }
 
+/**
+ * Suggested prompts in English and Hindi to help users initiate conversations.
+ */
 const SUGGESTED_PROMPTS: Record<string, string[]> = {
   en: [
     'Is it safe to travel today?',
@@ -27,6 +30,10 @@ const SUGGESTED_PROMPTS: Record<string, string[]> = {
   ],
 };
 
+/**
+ * ChatPanel component renders a floating chat assistant (FAB + panel)
+ * to provide contextual weather and preparedness help to the user.
+ */
 export default function ChatPanel({ profile, lang, pageContext }: ChatPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);

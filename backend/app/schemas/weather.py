@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class WeatherDataResponse(BaseModel):
+    """Pydantic schema representing structured weather conditions, risk levels, and monsoon phase info."""
     city: str
     temperature_c: float
     humidity_percent: float
@@ -17,6 +18,7 @@ class WeatherDataResponse(BaseModel):
 
 
 class WeatherOverrideRequest(BaseModel):
+    """Pydantic schema for requesting a weather scenario simulation override."""
     scenario: str = Field(
         ...,
         pattern="^(normal|heavy_rain|flood_risk|cyclone_warning|post_monsoon_clear)$",
