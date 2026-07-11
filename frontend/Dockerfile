@@ -1,9 +1,9 @@
 # Stage 1: Build React frontend
-FROM node:22-alpine AS builder
+FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package*.json ./
+COPY package.json ./
 RUN npm install
 
 # Copy codebase and build
