@@ -1,0 +1,11 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+stormshield.db
+tests
+.pytest_cache
+.git
+.gitignore
