@@ -125,22 +125,73 @@ async def test_weather_resolution_override():
 
 
 @pytest.mark.asyncio
-async def test_weather_resolution_simulated_fallback():
-    """Test simulated weather fallback logic for both registered and unregistered cities."""
+async def test_weather_resolution_open_meteo_fallback():
+    """Test that weather service successfully falls back to Open-Meteo live API when OWM is not configured."""
     weather_service.clear_override()
     
-    # 1. Test baseline city
-    weather = await weather_service.get_weather("Mumbai")
-    assert weather.city == "Mumbai"
-    assert weather.source == "simulated"
-    # Mumbai baseline is warning/high
-    assert weather.flood_risk in ("moderate", "high", "very_high")
+    mock_geo_resp = MagicMock()
+    mock_geo_resp.status_code = 200
+    mock_geo_resp.json.return_value = {
+        "results": [
+            {
+                "name": "Mumbai",
+                "latitude": 19.07283,
+                "longitude": 72.88261,
+                "country_code": "IN",
+                "country": "India"
+            }
+        ]
+    }
     
-    # 2. Test unregistered city
-    weather_unregistered = await weather_service.get_weather("NonExistentCity")
-    assert weather_unregistered.city == "NonExistentCity"
-    assert weather_unregistered.source == "simulated"
-    assert weather_unregistered.condition == "Moderate Rain"
+    mock_weather_resp = MagicMock()
+    mock_weather_resp.status_code = 200
+    mock_weather_resp.json.return_value = {
+        "current": {
+            "temperature_2m": 28.5,
+            "relative_humidity_2m": 90.0,
+            "wind_speed_10m": 15.0,
+            "precipitation": 12.0,
+            "weather_code": 63  # Moderate Rain
+        }
+    }
+    
+    async def mock_get(url, params=None, **kwargs):
+        if "geocoding-api" in url:
+            return mock_geo_resp
+        elif "api.open-meteo.com" in url:
+            return mock_weather_resp
+        return MagicMock(status_code=404)
+        
+    with patch("httpx.AsyncClient.get", side_effect=mock_get):
+        weather = await weather_service.get_weather("Mumbai")
+        assert weather.city == "Mumbai"
+        assert weather.source == "live"
+        assert weather.temperature_c == 28.5
+        assert weather.humidity_percent == 90.0
+        assert weather.rainfall_mm == 12.0
+        assert weather.wind_speed_kmh == 15.0
+        assert weather.condition == "Moderate Rain"
+        assert weather.severity == "watch"
+        assert weather.flood_risk == "moderate"
+
+
+@pytest.mark.asyncio
+async def test_weather_resolution_all_fail():
+    """Test that weather service raises HTTPException (503) when all live weather lookups fail."""
+    weather_service.clear_override()
+    
+    from fastapi import HTTPException
+    
+    async def mock_get(url, params=None, **kwargs):
+        mock_resp = MagicMock()
+        mock_resp.status_code = 500
+        return mock_resp
+        
+    with patch("httpx.AsyncClient.get", side_effect=mock_get):
+        with pytest.raises(HTTPException) as exc_info:
+            await weather_service.get_weather("Mumbai")
+        assert exc_info.value.status_code == 503
+
 
 
 @pytest.mark.asyncio
@@ -176,17 +227,18 @@ async def test_weather_resolution_live_fetching(monkeypatch):
 def test_weather_hash():
     """Verify that the weather hash changes only when key risk-affecting weather fields are modified."""
     w1 = WeatherDataResponse(
-        city="Mumbai", source="simulated", temperature_c=28.0, humidity_percent=80.0,
+        city="Mumbai", source="live", temperature_c=28.0, humidity_percent=80.0,
         rainfall_mm=50.0, wind_speed_kmh=15.0, condition="Rainy", flood_risk="high",
         severity="warning", monsoon_phase="active_monsoon"
     )
     w2 = WeatherDataResponse(
-        city="Delhi", source="simulated", temperature_c=32.0, humidity_percent=70.0,
+        city="Delhi", source="live", temperature_c=32.0, humidity_percent=70.0,
         rainfall_mm=20.0, wind_speed_kmh=10.0, condition="Rainy", flood_risk="high",
         severity="warning", monsoon_phase="active_monsoon"
     )
     # Even though temperature, rainfall etc. differ, key hash fields match
     assert weather_service.get_weather_hash(w1) == weather_service.get_weather_hash(w2)
+
 
 
 # ===========================================================================

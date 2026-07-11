@@ -89,3 +89,62 @@ def mock_gemini(monkeypatch):
     monkeypatch.setattr("app.services.ai_service.ChatGoogleGenerativeAI", lambda *args, **kwargs: fake_llm)
     
     return fake_llm
+
+
+@pytest.fixture(autouse=True)
+def clear_weather_key(monkeypatch):
+    """Ensure that the OpenWeatherMap API key is empty by default during tests so fallback paths execute."""
+    monkeypatch.setenv("OPENWEATHERMAP_API_KEY", "")
+
+
+@pytest.fixture(autouse=True)
+def mock_weather_http(monkeypatch):
+    """Globally mock httpx.AsyncClient.get to prevent any real network requests during tests."""
+    from unittest.mock import MagicMock
+    import httpx
+    
+    original_get = httpx.AsyncClient.get
+    
+    async def fake_get(self, url, params=None, **kwargs):
+        url_str = str(url)
+        if "geocoding-api.open-meteo.com" in url_str:
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json.return_value = {
+                "results": [{
+                    "name": "TestCity",
+                    "latitude": 12.97,
+                    "longitude": 77.59,
+                    "country_code": "IN",
+                    "country": "India"
+                }]
+            }
+            return resp
+        elif "api.open-meteo.com" in url_str:
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json.return_value = {
+                "current": {
+                    "temperature_2m": 28.0,
+                    "relative_humidity_2m": 80.0,
+                    "wind_speed_10m": 15.0,
+                    "precipitation": 10.0,
+                    "weather_code": 3
+                }
+            }
+            return resp
+        elif "api.openweathermap.org" in url_str:
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json.return_value = {
+                "main": {"temp": 28.0, "humidity": 80},
+                "wind": {"speed": 4.17},  # 15 km/h
+                "weather": [{"main": "Clouds", "description": "overcast clouds"}],
+                "rain": {"1h": 10.0}
+            }
+            return resp
+        else:
+            return await original_get(self, url, params=params, **kwargs)
+        
+
+

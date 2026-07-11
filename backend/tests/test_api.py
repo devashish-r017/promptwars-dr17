@@ -98,7 +98,7 @@ def test_weather_endpoints(client):
     assert response.status_code == 200
     res_json = response.json()
     assert res_json["city"] == "Bengaluru"
-    assert res_json["source"] == "simulated"
+    assert res_json["source"] == "live"
 
     # 2. Set scenario override
     override_data = {"scenario": "heavy_rain"}
@@ -118,7 +118,8 @@ def test_weather_endpoints(client):
 
     # Fetch weather again to verify override cleared
     response = client.get("/api/weather/Mumbai")
-    assert response.json()["source"] == "simulated"
+    assert response.json()["source"] == "live"
+
 
 
 # ===========================================================================
