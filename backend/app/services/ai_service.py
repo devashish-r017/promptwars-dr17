@@ -175,7 +175,10 @@ async def generate_plan(
     elif phase_simple == "post":
         phase_simple = "after"
 
-    prompt = ChatPromptTemplate.from_messages([("system", _PLAN_SYSTEM)])
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", _PLAN_SYSTEM),
+        ("human", "Generate my personalized monsoon preparedness plan now."),
+    ])
     chain = prompt | llm | StrOutputParser()
 
     result = await chain.ainvoke({
@@ -193,7 +196,10 @@ async def generate_dashboard(
 ) -> dict:
     """Generate dashboard content (risk score, checklist, travel, safety)."""
     llm = _get_llm(temperature=0.5)
-    prompt = ChatPromptTemplate.from_messages([("system", _DASHBOARD_SYSTEM)])
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", _DASHBOARD_SYSTEM),
+        ("human", "Generate my monsoon preparedness dashboard summary now."),
+    ])
     chain = prompt | llm | StrOutputParser()
 
     result = await chain.ainvoke({
